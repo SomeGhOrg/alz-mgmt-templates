@@ -159,8 +159,12 @@ runs:
               Write-Host ""
 
             } catch {
-              Write-Error "What-If validation failed: $($_.Exception.Message)"
-              throw
+              if ($_.Exception.Message -match 'DeploymentWhatIfTimeout') {
+                Write-Warning "What-If timed out for $deploymentName (known Azure limitation for large management group deployments). Proceeding..."
+              } else {
+                Write-Error "What-If validation failed: $($_.Exception.Message)"
+                throw
+              }
             }
 
           } else {
@@ -170,7 +174,7 @@ runs:
               TemplateFile          = $env:TEMPLATE_FILE_PATH
               TemplateParameterFile = $env:TEMPLATE_PARAMETERS_FILE_PATH
               DenySettingsMode      = "None"
-              ActionOnUnmanage      = "DeleteAll"
+              ActionOnUnmanage      = "DetachAll"
               Force                 = $true
               Verbose               = $true
             }
