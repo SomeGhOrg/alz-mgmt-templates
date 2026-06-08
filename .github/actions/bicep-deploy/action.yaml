@@ -34,10 +34,31 @@ inputs:
     description: 'Enable what-if mode (validation only, no deployment)'
     required: false
     default: 'false'
+  azureClientId:
+    description: 'Azure Client ID for OIDC re-authentication'
+    required: false
+    default: ''
+  azureTenantId:
+    description: 'Azure Tenant ID for OIDC re-authentication'
+    required: false
+    default: ''
+  azureSubscriptionId:
+    description: 'Azure Subscription ID for OIDC re-authentication'
+    required: false
+    default: ''
 
 runs:
   using: "composite"
   steps:
+    - name: Refresh OIDC Token
+      if: ${{ inputs.azureClientId != '' }}
+      uses: azure/login@v2
+      with:
+        client-id: ${{ inputs.azureClientId }}
+        tenant-id: ${{ inputs.azureTenantId }}
+        subscription-id: ${{ inputs.azureSubscriptionId }}
+        enable-AzPSSession: true
+
     - name: Run Bicep Deploy with Deployment Stack
       uses: azure/powershell@v2
       with:
