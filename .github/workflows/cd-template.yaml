@@ -204,6 +204,15 @@ jobs:
           firstRunWhatIf: 'false'
           whatIfEnabled: 'true'
 
+      # Re-authenticate to refresh OIDC token (expires after ~60 min)
+      - name: Refresh OIDC Token (mid-plan)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
+
       - name: 'Plan: Governance-Platform Management'
         uses: SomeGhOrg/alz-mgmt-templates/.github/actions/bicep-deploy@main
         if: ${{ inputs.governance-platform-management }}
@@ -469,6 +478,15 @@ jobs:
           resourceGroupName: ''
           location: '${{ env.LOCATION }}'
           deploymentType: 'managementGroup'
+
+      # Re-authenticate to refresh OIDC token (expires after ~60 min)
+      - name: Refresh OIDC Token (mid-deployment)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
 
       - name: 'Deploy: Governance-Platform Management'
         uses: SomeGhOrg/alz-mgmt-templates/.github/actions/bicep-deploy@main
